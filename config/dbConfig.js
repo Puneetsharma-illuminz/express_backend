@@ -5,10 +5,10 @@ let connection;
 if (process.env.NODE_ENV != 'live') {
     connection = mysql.createPool({
         connectionLimit: 70,
-        host: 'localhost',
-        user: 'root',
-        password: 'illuminz',
-        database: 'express_database',
+        host: 'illuminz.com',
+        user: 'illuminz_express',
+        password: 'PTRqzVmw]i9+',
+        database: 'illuminz_express',
         charset: 'utf8mb4'
     });
 } else {
