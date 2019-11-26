@@ -3,6 +3,7 @@ const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
 const HapiSwagger = require('hapi-swagger');
 const dotenv = require('dotenv');
+dotenv.config();
 
 const pre = require('./preCondition');
 
@@ -10,7 +11,6 @@ const AuthBearer = require('hapi-auth-bearer-token');
 
 let routes = require('./Routes');
 const auth = require('./auth');
-dotenv.config();
 let host;
 
 let port = 8000;

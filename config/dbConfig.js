@@ -1,6 +1,7 @@
 // if (process.env.NODE_ENV == 'local') {
 
 var mysql = require('mysql');
+console.log(process.env.HOST)
 let connection;
 if (process.env.NODE_ENV != 'live') {
     connection = mysql.createPool({
