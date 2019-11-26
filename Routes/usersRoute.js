@@ -1,5 +1,8 @@
-const Joi = require('@hapi/joi'); //.extend(require('@hapi/joi-date'));
-// const Joi = require('joi')
+//const Joi = require('@hapi/joi'); //.extend(require('@hapi/joi-date'));
+
+let BaseJoi = require('joi');
+const Extension = require('joi-date-extensions');
+let Joi = BaseJoi.extend(Extension);
 const { userController } = require('../Controllers');
 const boom = require('boom');
 const universalFunctions = require("../universalFunction/functions");
@@ -22,6 +25,23 @@ exports.phoneExist = {
         },
 
         tags: ['api', 'user'],
+        validate: {
+            headers: {
+                'accept-language': Joi.string().optional().default('en').description('lang'),
+            },
+            options: {
+                allowUnknown: true
+            },
+            payload: {
+                // type: Joi.string().valid(Object.keys(constant.ORDER_TYPE)).required()
+                email: Joi.string().email({ minDomainAtoms: 1 }).required().lowercase(),
+                phoneNumber: Joi.string().required(),
+                countryCode: Joi.number().required(),
+                referralCode: Joi.string().trim().optional().allow(''),
+                // orderId: Joi.number().required()
+            },
+            failAction: universalFunctions.failActionFunction,
+        },
 
         plugins: {
             'hapi-swagger': {
@@ -412,6 +432,20 @@ exports.getCategories = {
     }
 };
 
+exports.getCategoriesAndVehicleInfo = {
+    method: 'GET',
+    path: '/user/getCategoriesAndVehicleInfo',
+    async handler(request) {
+        //let sessionInfo = request.auth.credentials.userSession;
+
+        const lang = request.headers['accept-language'];
+
+        let data = await userController.getCategoriesAndVehicleInfo();
+
+
+        return data;
+    }
+};
 exports.calculateDistance = {
     method: 'POST',
     path: '/user/calculateDistance',

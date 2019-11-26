@@ -4,18 +4,19 @@ const Vision = require('@hapi/vision');
 const HapiSwagger = require('hapi-swagger');
 const dotenv = require('dotenv');
 
+const pre = require('./preCondition');
+
 const AuthBearer = require('hapi-auth-bearer-token');
 
 let routes = require('./Routes');
 const auth = require('./auth');
 dotenv.config();
-
+let host;
 
 let port = 8000;
 
 if (process.env.NODE_ENV == 'live') {
-    let host;
-    host = host;
+
     port = process.env.PORT || 3000
 } else {
     host = 'localhost';
@@ -44,7 +45,7 @@ console.log(process.env.PORT);
             schemes: ['http', 'https']
         };
         await app.register(AuthBearer);
-        // await app.register(pre);
+        await app.register(pre);
         await app.register(auth);
         await app.register([
             Inert,

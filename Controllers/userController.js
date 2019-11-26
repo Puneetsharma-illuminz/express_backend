@@ -481,6 +481,48 @@ async function getCategories(payload, lang, user) {
 
 }
 
+async function getCategoriesAndVehicleInfo(payload, lang, user) {
+
+
+    try {
+
+
+        let categories = await dataBaseService.executeQuery(`SELECT  id, name from categories`)
+
+        if (!categories && categories.length == 0) {
+
+            return { messageData: constant.MESSAGE.NO_CATEGORY }
+        }
+
+        let vehilcesInfo = await dataBaseService.executeQuery(`SELECT  
+        JSON_ARRAYAGG(vehicle_info.description) AS description,vehicles.type AS vehicleType,vehicles.packageDimensions AS size,vehicles.perKilometerCharge AS baseFare, vehicles.minCapacity AS capacity
+     FROM
+         vehicles
+             LEFT JOIN
+         vehicle_info ON vehicles.type = vehicle_info.vehicleId
+       GROUP BY vehicles.type `)
+
+        vehilcesInfo.map(vehicle => {
+            vehicle.description = JSON.parse(vehicle.description)
+            return vehicle;
+        });
+
+        return universalFunctions.sendSuccess({
+            data: {
+                categories: categories,
+                vehicles: vehilcesInfo
+            }
+        });
+
+    } catch (e) {
+        e = universalFunctions.sendExceptions(e, constant.MESSAGE.SOMETHING_WENT_WRONG);
+        return boom.badRequest(e);
+    }
+
+
+
+}
+
 async function calculateDistance(payload) {
     let newPayload = {...payload };
     // console.log(newPayload);
@@ -569,6 +611,7 @@ module.exports = {
     insertSocial,
     addAddress,
     getCategories,
+    getCategoriesAndVehicleInfo,
     calculateDistance
 
 }
