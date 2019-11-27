@@ -1,14 +1,14 @@
 let config = require('../config');
 const universalFunctions = require("../universalFunction/functions");
-let { constant } = require('../config')
+let { constant } = require('../config');
 const Jwt = require('jsonwebtoken');
-const boom = require('boom')
+const boom = require('boom');
 const connection = config.connection;
 async function executeQuery(query, parems) {
     return new Promise((resolve, reject) => {
         let quer = connection.query(query, parems, (err, result) => {
-          //  console.log('sql----->>>>', JSON.stringify(quer.sql.replace(/(\r\n\t|\n|\r\t)/gm, "")));
-             if (err) {
+            //  console.log('sql----->>>>', JSON.stringify(quer.sql.replace(/(\r\n\t|\n|\r\t)/gm, "")));
+            if (err) {
                 console.log(err);
                 err = universalFunctions.sendExceptions(err, '')
                 reject(err);
@@ -20,9 +20,9 @@ async function executeQuery(query, parems) {
 
 async function getConnection() {
     return new Promise((resolve, reject) => {
-        connection.getConnection(function (err, con) {
+        connection.getConnection(function(err, con) {
             if (err) {
-                err = universalFunction.sendExceptions(err, '')
+                err = universalFunctions.sendExceptions(err, '')
                 reject(err)
             }
 
@@ -36,8 +36,8 @@ async function runTransaction(query, params, con) {
             console.log('sql----->>>>', quer.sql);
             if (err) {
                 // connection.rollback(function() {
-                err = universalFunction.sendExceptions(err, '')
-                // con.release();
+                err = universalFunctions.sendExceptions(err, '')
+                    // con.release();
                 reject(err);
                 //   });
 
@@ -53,7 +53,7 @@ async function compleTransaction(query, params, con) {
                 if (err) {
                     // connection.rollback(function() {
                     console.log(err);
-                    err = universalFunction.sendExceptions(err, '')
+                    err = universalFunctions.sendExceptions(err, '')
                     reject(err);
                     //   });
 
@@ -68,8 +68,8 @@ async function compleTransaction(query, params, con) {
 }
 async function verifyToken(token) {
     try {
-        let decodedToken =  Jwt.verify(token, constant.JWT_SECRET);
-        console.log("--------",decodedToken);
+        let decodedToken = Jwt.verify(token, constant.JWT_SECRET);
+        console.log("--------", decodedToken);
         let result = await sessionExist(decodedToken.sessionId);
         console.log(decodedToken);
         if (!result) {

@@ -1,3 +1,4 @@
 module.exports = [].concat(
-    require('./usersRoute')
+    require('./usersRoute'),
+    require('./adminRoute')
 );

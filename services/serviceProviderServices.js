@@ -1,10 +1,10 @@
 const dataBaseService = require("./databaseServices");
-let universalFunction = require('../universalFunction/functions');
+let universalFunctions = require('../universalFunction/functions');
 const Jwt = require('jsonwebtoken');
 let { constant } = require('../config')
-async function getServiceProvider(payload) { 
+async function getServiceProvider(payload) {
     try {
-        let data =  await dataBaseService.executeQuery(`
+        let data = await dataBaseService.executeQuery(`
         SELECT 
         tb_service_provider.*
     FROM  
@@ -13,16 +13,16 @@ async function getServiceProvider(payload) {
     email = ? 
     group by tb_service_provider.id
     `, [payload.email]);
-        if(data && data.length>0){
-            data[0].permissions = universalFunction.jsonParse(data[0].permissions)
-            data[0].regions = universalFunction.jsonParse(data[0].regions)
-            if(data[0].has_all_access){
+        if (data && data.length > 0) {
+            data[0].permissions = universalFunctions.jsonParse(data[0].permissions)
+            data[0].regions = universalFunctions.jsonParse(data[0].regions)
+            if (data[0].has_all_access) {
                 data[0].permissions = [constant.ROLE.SERVICE_PROVIDER]
             }
         }
- return data 
+        return data
     } catch (e) {
-        e = universalFunction.sendExceptions(e, constant.MESSAGE.SOMETHING_WENT_WRONG)
+        e = universalFunctions.sendExceptions(e, constant.MESSAGE.SOMETHING_WENT_WRONG)
         throw e;
     }
 }
@@ -34,14 +34,14 @@ async function getCategory(payload) {
             attachment
         WHERE
             attachment.id = category.image) as imageToShow from category where 1 = 1 `
-        let param = [constant.IMAGE_PATH,constant.IMAGE_PATH]
+        let param = [constant.IMAGE_PATH, constant.IMAGE_PATH]
         for (let i = 0; i < Object.keys(payload).length; i++) {
-            if(payload[Object.keys(payload)[i]]==null){
-            sql += ` and isnull(${Object.keys(payload)[i]})`
-            // param.push()
-            } else{
-            sql += ` and ${Object.keys(payload)[i]} =?`
-            param.push(payload[Object.keys(payload)[i]])
+            if (payload[Object.keys(payload)[i]] == null) {
+                sql += ` and isnull(${Object.keys(payload)[i]})`
+                    // param.push()
+            } else {
+                sql += ` and ${Object.keys(payload)[i]} =?`
+                param.push(payload[Object.keys(payload)[i]])
             }
         }
 
@@ -52,21 +52,20 @@ async function getCategory(payload) {
 }
 async function createToken(spDetail, remoteIp) {
     try {
-        let session = await dataBaseService.executequery('insert into user_session (user_id,remote_ip,device_token,role,device_type) values (?,?,?,?,?)',
-            [spDetail.id, remoteIp, spDetail.deviceToken, spDetail.role,spDetail.devicetype]);
+        let session = await dataBaseService.executeQuery('insert into user_session (user_id,remote_ip,device_token,role,device_type) values (?,?,?,?,?)', [spDetail.id, remoteIp, spDetail.deviceToken, spDetail.role, spDetail.devicetype]);
         const dataForJwtToken = {
             sessionId: session.insertId,
             userId: spDetail.id,
             dateOfCreation: new Date(),
             role: spDetail.role,
-            country:spDetail.country,
-            permissions:spDetail.permissions,
-            regions:spDetail.regions
+            country: spDetail.country,
+            permissions: spDetail.permissions,
+            regions: spDetail.regions
         };
         let expireTime = {
             expiresIn: '2d'
         };
-        const token = Jwt.signAsync(dataForJwtToken, constant.JWT_SECRET, expireTime);
+        const token = Jwt.sign(dataForJwtToken, constant.JWT_SECRET, expireTime);
 
         return token;
     } catch (e) {
@@ -74,9 +73,9 @@ async function createToken(spDetail, remoteIp) {
         throw e;
     }
 }
-async function getCategoryWithChild(){
-    try{
-        let data =  await dataBaseService.executeQuery(`
+async function getCategoryWithChild() {
+    try {
+        let data = await dataBaseService.executeQuery(`
                 SELECT 
             cat1.id,
             cat1.name,
@@ -101,18 +100,18 @@ async function getCategoryWithChild(){
             isnull(cat1.parent_id)
             
             group by cat1.id
-        `,[constant.IMAGE_PATH,constant.IMAGE_PATH])
+        `, [constant.IMAGE_PATH, constant.IMAGE_PATH])
         return data
-    }catch (e) {
+    } catch (e) {
         e = universalFunction.sendExceptions(e, constant.MESSAGE.SOMETHING_WENT_WRONG)
         throw e;
     }
 }
-async function getCoutryDetails(country){
-    try{
-       let data =  await dataBaseService.executequery('select * from countries where id = ?',[country])
+async function getCoutryDetails(country) {
+    try {
+        let data = await dataBaseService.executequery('select * from countries where id = ?', [country])
         return data[0]
-    }catch (e) {
+    } catch (e) {
         e = universalFunction.sendExceptions(e, constant.MESSAGE.SOMETHING_WENT_WRONG)
         throw e;
     }

@@ -116,19 +116,19 @@ exports.register = {
             options: {
                 allowUnknown: true
             },
-            // payload: {
-            //     email: Joi.string().email().optional().lowercase().allow(''),
-            //     password: Joi.string().required(),
-            //     deviceToken: Joi.string().optional().allow(''),
-            //     phoneNumber: Joi.string().required(),
-            //     countryCode: Joi.number().required(),
-            //     fullName: Joi.string().optional().allow(''),
-            //     lastName: Joi.string().optional().allow(''),
-            //     verificationCode: Joi.string().optional().allow(''),
-            //     referralCode: Joi.string().trim().optional().allow(''),
+            payload: {
+                email: Joi.string().email().optional().lowercase().allow(''),
+                password: Joi.string().required(),
+                deviceToken: Joi.string().optional().allow(''),
+                phoneNumber: Joi.string().required(),
+                countryCode: Joi.number().required(),
+                fullName: Joi.string().optional().allow(''),
+                lastName: Joi.string().optional().allow(''),
+                verificationCode: Joi.string().optional().allow(''),
+                referralCode: Joi.string().trim().optional().allow(''),
 
-            // },
-            // failAction: universalFunctions.failActionFunction,
+            },
+            failAction: universalFunctions.failActionFunction,
 
         },
         plugins: {
@@ -342,8 +342,7 @@ exports.socialLogin = {
             },
             payload: {
                 deviceToken: Joi.string().optional().allow(''),
-                socialType: Joi.number().required(),
-                //   .valid([Object.keys(constant.SOCIAL_LOGIN)]).description('social media type'),
+                socialType: Joi.number().required().valid([Object.keys(constant.SOCIAL_LOGIN)]).description('social media type'),
                 fullName: Joi.string().trim().required(),
                 accessToken: Joi.string().required().description('access token to verify the user'),
                 socialID: Joi.string().trim().required().description('Either facebookID/googleID'),
